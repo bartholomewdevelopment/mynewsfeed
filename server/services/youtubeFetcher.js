@@ -95,9 +95,15 @@ const fetchYouTubeChannel = async (source, keywordRules) => {
     const feed = await ytParser.parseString(rssRes.data);
     const items = [];
 
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
     for (const entry of (feed.items || []).slice(0, 15)) {
       const videoId = entry.videoId;
       if (!videoId) continue;
+
+      // Skip videos older than 7 days
+      const publishedAt = entry.pubDate ? new Date(entry.pubDate) : null;
+      if (publishedAt && publishedAt < sevenDaysAgo) continue;
 
       const guid = `yt-${videoId}`;
       if (await FeedItem.exists({ guid })) continue;

@@ -165,7 +165,7 @@ const seedDefaultData = async () => {
   console.log(`[seed] Upserted ${DEFAULT_SOURCES.length} default sources`);
 
   // Remove the 3 dead sources that were in the old seed
-  const deadNames = ['WSAZ Local News', 'WCHS/Fox11 Charleston', 'Ohio Emergency Management', 'Ohio DOT Traffic Alerts'];
+  const deadNames = ['WSAZ Local News', 'WCHS/Fox11 Charleston', 'Ohio Emergency Management', 'Ohio DOT Traffic Alerts', 'Come Follow Me — Church News'];
   const removed = await Source.deleteMany({ name: { $in: deadNames } });
   if (removed.deletedCount > 0) {
     console.log(`[seed] Removed ${removed.deletedCount} dead sources`);

@@ -61,7 +61,17 @@ const fetchLeague = async (league, myTeamIds, dateStr) => {
     params,
     timeout: 10000,
   });
+
+  // Only include games that actually fall on the requested date.
+  // ESPN sometimes returns stale/recent games when nothing is scheduled,
+  // which would show old end-of-season results as "today".
+  const targetDate = dateStr || toDateString(new Date());
+
   return (res.data?.events || [])
+    .filter((e) => {
+      if (!e.date) return false;
+      return toDateString(new Date(e.date)) === targetDate;
+    })
     .map((e) => parseGame(e, myTeamIds))
     .filter(Boolean);
 };

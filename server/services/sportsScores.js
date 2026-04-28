@@ -20,6 +20,7 @@ const parseGame = (event, myTeamIds) => {
 
   const status = comp.status || {};
   const statusType = status.type || {};
+  const hasStarted = statusType.name !== 'STATUS_SCHEDULED' && statusType.name !== 'STATUS_PREGAME';
 
   const isMyGame =
     myTeamIds.has(home.team?.id) || myTeamIds.has(away.team?.id);
@@ -30,7 +31,7 @@ const parseGame = (event, myTeamIds) => {
       id: home.team?.id,
       name: home.team?.displayName,
       abbr: home.team?.abbreviation,
-      score: home.score ?? null,
+      score: hasStarted ? (home.score ?? null) : null,
       winner: home.winner ?? false,
       mine: myTeamIds.has(home.team?.id),
     },
@@ -38,7 +39,7 @@ const parseGame = (event, myTeamIds) => {
       id: away.team?.id,
       name: away.team?.displayName,
       abbr: away.team?.abbreviation,
-      score: away.score ?? null,
+      score: hasStarted ? (away.score ?? null) : null,
       winner: away.winner ?? false,
       mine: myTeamIds.has(away.team?.id),
     },
@@ -56,22 +57,12 @@ const parseGame = (event, myTeamIds) => {
 };
 
 const fetchLeague = async (league, myTeamIds, dateStr) => {
-  const params = dateStr ? { dates: dateStr } : {};
   const res = await axios.get(`${ESPN_API}/${league}/scoreboard`, {
-    params,
+    params: { dates: dateStr },
     timeout: 10000,
   });
-
-  // Only include games that actually fall on the requested date.
-  // ESPN sometimes returns stale/recent games when nothing is scheduled,
-  // which would show old end-of-season results as "today".
-  const targetDate = dateStr || toDateString(new Date());
-
+  // Trust ESPN to return only games for the requested date — no secondary filter needed
   return (res.data?.events || [])
-    .filter((e) => {
-      if (!e.date) return false;
-      return toDateString(new Date(e.date)) === targetDate;
-    })
     .map((e) => parseGame(e, myTeamIds))
     .filter(Boolean);
 };

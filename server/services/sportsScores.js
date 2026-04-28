@@ -85,9 +85,9 @@ const fetchScores = async () => {
   const yesterdayStr = toDateString(yesterday);
 
   const [nbaTodayRes, nbaYestRes, ncaaTodayRes, ncaaYestRes] = await Promise.allSettled([
-    fetchLeague('nba', MY_NBA_TEAM_IDS, null),          // null = ESPN default (today)
+    fetchLeague('nba', MY_NBA_TEAM_IDS, todayStr),
     fetchLeague('nba', MY_NBA_TEAM_IDS, yesterdayStr),
-    fetchLeague('mens-college-basketball', MY_NCAA_TEAM_IDS, null),
+    fetchLeague('mens-college-basketball', MY_NCAA_TEAM_IDS, todayStr),
     fetchLeague('mens-college-basketball', MY_NCAA_TEAM_IDS, yesterdayStr),
   ]);
 

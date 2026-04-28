@@ -1,5 +1,6 @@
 const axios = require('axios');
 const FeedItem = require('../models/FeedItem');
+const { extractArticle } = require('./articleExtractor');
 
 // 2026 Old Testament manual — lesson 1 starts the week of Dec 29, 2025
 const CFM_START = new Date('2025-12-29T00:00:00Z');
@@ -13,7 +14,7 @@ const getCurrentLessonNumber = () => {
   return Math.min(Math.max(Math.floor(daysSinceStart / 7) + 1, 1), TOTAL_LESSONS);
 };
 
-const fetchLesson = async (lessonNumber) => {
+const fetchLessonViaApi = async (lessonNumber) => {
   const uri = `${CFM_BASE_URI}/${lessonNumber}`;
   const res = await axios.get(CFM_API, {
     params: { lang: 'eng', uri },
@@ -23,28 +24,37 @@ const fetchLesson = async (lessonNumber) => {
     },
     timeout: 12000,
   });
-
   const meta = res.data?.meta || {};
   const body = res.data?.content?.body || '';
+  const text = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return {
+    title: meta.title || `Come, Follow Me — Lesson ${lessonNumber}`,
+    summary: text.substring(0, 600),
+    itemUrl: `${CFM_BASE_URL}${uri}?lang=eng`,
+  };
+};
 
-  // Strip HTML tags for a clean summary
-  const text = body
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+const fetchLessonViaHtml = async (lessonNumber) => {
+  const itemUrl = `${CFM_BASE_URL}${CFM_BASE_URI}/${lessonNumber}?lang=eng`;
+  const article = await extractArticle(itemUrl);
+  return {
+    title: article.title || `Come, Follow Me — Lesson ${lessonNumber}`,
+    summary: article.textContent.substring(0, 600),
+    itemUrl,
+  };
+};
 
-  const summary = text.substring(0, 600);
-  const title = meta.title || `Come, Follow Me — Lesson ${lessonNumber}`;
-  const itemUrl = `${CFM_BASE_URL}${uri}?lang=eng`;
-  const guid = `cfm-2026-lesson-${lessonNumber}`;
-
-  return { title, summary, itemUrl, guid, meta, lessonNumber };
+const fetchLesson = async (lessonNumber) => {
+  try {
+    return await fetchLessonViaApi(lessonNumber);
+  } catch {
+    // API blocked or unavailable — fall back to HTML extraction
+    return await fetchLessonViaHtml(lessonNumber);
+  }
 };
 
 const fetchComeFollowMe = async () => {
   const currentLesson = getCurrentLessonNumber();
-
-  // Fetch this week and next week so you always have both in the feed
   const lessonNumbers = [currentLesson];
   if (currentLesson < TOTAL_LESSONS) lessonNumbers.push(currentLesson + 1);
 
@@ -53,13 +63,9 @@ const fetchComeFollowMe = async () => {
   for (const lessonNumber of lessonNumbers) {
     try {
       const guid = `cfm-2026-lesson-${lessonNumber}`;
-
-      // Already in DB — skip
       if (await FeedItem.exists({ guid })) continue;
 
       const lesson = await fetchLesson(lessonNumber);
-
-      // Set publishedAt to the Monday of that lesson's week so it sorts correctly
       const lessonStartDate = new Date(CFM_START.getTime() + (lessonNumber - 1) * 7 * 86400000);
 
       await FeedItem.create({
@@ -75,7 +81,7 @@ const fetchComeFollowMe = async () => {
         locationRelevance: 0,
         importanceScore: 40,
         approved: true,
-        guid: lesson.guid,
+        guid,
         tags: ['come follow me', 'old testament', '2026'],
       });
 

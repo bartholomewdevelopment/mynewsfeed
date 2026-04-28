@@ -3,7 +3,7 @@ const axios = require('axios');
 const ESPN_API = 'https://site.api.espn.com/apis/site/v2/sports/basketball';
 
 // Teams to visually highlight — not used for filtering, just for emphasis in the UI
-const MY_NBA_TEAM_IDS = new Set(['20', '13', '21', '5', '18']); // Jazz, Lakers, TWolves, Cavs, Knicks
+const MY_NBA_TEAM_IDS = new Set(['26', '13', '16', '5', '18']); // Jazz, Lakers, TWolves, Cavs, Knicks
 const MY_NCAA_TEAM_IDS = new Set(['252', '254']);                // BYU, Utah
 
 const toDateString = (date) =>

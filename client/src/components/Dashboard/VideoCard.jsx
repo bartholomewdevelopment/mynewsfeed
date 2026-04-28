@@ -16,10 +16,7 @@ export default function VideoCard({ item, onHide, selected, onToggleSelect }) {
     ? formatDistanceToNow(new Date(item.publishedAt), { addSuffix: true })
     : '';
 
-  // Just start playing — don't archive yet. User decides when they're done.
-  const handleWatch = () => {
-    setPlaying(true);
-  };
+  const handleWatch = () => setPlaying(true);
 
   return (
     <div
@@ -27,6 +24,7 @@ export default function VideoCard({ item, onHide, selected, onToggleSelect }) {
         selected ? 'border-sky-700' : 'border-slate-800 hover:border-slate-700'
       }`}
     >
+      {/* Thumbnail / player */}
       {playing ? (
         <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
           <iframe
@@ -58,60 +56,61 @@ export default function VideoCard({ item, onHide, selected, onToggleSelect }) {
               </svg>
             </div>
           </div>
-          {/* Checkbox overlay — top-left corner */}
-          <div
-            className="absolute top-2 left-2"
-            onClick={(e) => { e.stopPropagation(); onToggleSelect(item._id); }}
-          >
-            <input
-              type="checkbox"
-              checked={selected}
-              onChange={() => onToggleSelect(item._id)}
-              className="w-4 h-4 rounded accent-sky-500 cursor-pointer"
-            />
-          </div>
         </div>
       )}
 
+      {/* Info + controls */}
       <div className="p-3">
-        <h3 className="text-sm font-medium text-slate-200 leading-snug mb-1 line-clamp-2">
-          {item.title}
-        </h3>
-        <div className="flex items-center gap-2 text-xs text-slate-500">
-          <span>{item.sourceName}</span>
-          <span>·</span>
-          <span>{age}</span>
-          {formatDuration(item.durationSeconds) && (
-            <>
-              <span>·</span>
-              <span className="font-mono">{formatDuration(item.durationSeconds)}</span>
-            </>
-          )}
-        </div>
+        <div className="flex gap-2 items-start">
+          {/* Checkbox — in the info section, not fighting the thumbnail click */}
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={() => onToggleSelect(item._id)}
+            className="w-4 h-4 rounded accent-sky-500 cursor-pointer flex-shrink-0 mt-0.5"
+          />
 
-        <div className="flex items-center gap-3 mt-2">
-          {!playing && (
-            <button
-              onClick={handleWatch}
-              className="text-xs text-sky-400 hover:text-sky-300 transition-colors"
-            >
-              Watch
-            </button>
-          )}
-          <a
-            href={item.itemUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
-          >
-            Open on YouTube
-          </a>
-          <button
-            onClick={() => onHide(item._id)}
-            className="text-xs text-slate-600 hover:text-slate-400 transition-colors ml-auto"
-          >
-            Dismiss
-          </button>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-medium text-slate-200 leading-snug mb-1 line-clamp-2">
+              {item.title}
+            </h3>
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <span>{item.sourceName}</span>
+              <span>·</span>
+              <span>{age}</span>
+              {formatDuration(item.durationSeconds) && (
+                <>
+                  <span>·</span>
+                  <span className="font-mono">{formatDuration(item.durationSeconds)}</span>
+                </>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 mt-2">
+              {!playing && (
+                <button
+                  onClick={handleWatch}
+                  className="text-xs text-sky-400 hover:text-sky-300 transition-colors"
+                >
+                  Watch
+                </button>
+              )}
+              <a
+                href={item.itemUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                Open on YouTube
+              </a>
+              <button
+                onClick={() => onHide(item._id)}
+                className="text-xs text-slate-600 hover:text-slate-400 transition-colors ml-auto"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -181,8 +181,14 @@ export default function FeedCard({ item, onRead, onHide, selected, onToggleSelec
           {articleText.byline && (
             <p className="text-xs text-slate-500 mb-3">{articleText.byline}</p>
           )}
-          <div className="prose-sm text-slate-300 leading-relaxed whitespace-pre-line text-sm max-h-[70vh] overflow-y-auto pr-1">
-            {articleText.textContent}
+          <div className="text-sm text-slate-300 leading-relaxed max-h-[70vh] overflow-y-auto pr-1 space-y-3">
+            {articleText.textContent
+              .split(/\n{2,}/)
+              .map((para, i) => para.trim())
+              .filter(Boolean)
+              .map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
           </div>
           <div className="mt-4 pt-3 border-t border-slate-800 flex items-center gap-4">
             <button

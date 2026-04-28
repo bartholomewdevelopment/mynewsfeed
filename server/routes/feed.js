@@ -11,10 +11,11 @@ router.get('/', auth, async (req, res) => {
   const { type, category, excludeCategory, limit = 500, page = 1, local } = req.query;
   const cutoff = new Date(Date.now() - FOURTEEN_DAYS);
 
+  const eightDaysAhead = new Date(Date.now() + 8 * 24 * 60 * 60 * 1000);
   const query = {
     approved: true,
     archived: { $ne: true },
-    publishedAt: { $gte: cutoff },
+    publishedAt: { $gte: cutoff, $lte: eightDaysAhead },
   };
   if (type) query.type = type;
   if (category) query.category = category;

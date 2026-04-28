@@ -17,6 +17,15 @@ export default function FeedCard({ item, onRead, onHide, selected, onToggleSelec
       setReaderState('idle');
       return;
     }
+
+    // If the item already has full content stored (e.g. Come Follow Me lessons),
+    // display it directly — no external HTTP request needed.
+    if (item.summary && item.summary.length > 500) {
+      setArticleText({ title: item.title, byline: item.sourceName, textContent: item.summary });
+      setReaderState('open');
+      return;
+    }
+
     if (!item.itemUrl) return;
     setReaderState('loading');
     setErrorMsg('');

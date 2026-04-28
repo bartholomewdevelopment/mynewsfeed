@@ -29,7 +29,7 @@ const fetchLessonViaApi = async (lessonNumber) => {
   const text = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
   return {
     title: meta.title || `Come, Follow Me — Lesson ${lessonNumber}`,
-    summary: text.substring(0, 600),
+    summary: text.substring(0, 8000),
     itemUrl: `${CFM_BASE_URL}${uri}?lang=eng`,
   };
 };

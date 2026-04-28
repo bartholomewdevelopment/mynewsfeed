@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 
+const formatDuration = (seconds) => {
+  if (!seconds) return null;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${m}:${String(s).padStart(2, '0')}`;
+};
+
 export default function VideoCard({ item, onHide, selected, onToggleSelect }) {
   const [playing, setPlaying] = useState(false);
   const age = item.publishedAt
@@ -72,6 +81,12 @@ export default function VideoCard({ item, onHide, selected, onToggleSelect }) {
           <span>{item.sourceName}</span>
           <span>·</span>
           <span>{age}</span>
+          {formatDuration(item.durationSeconds) && (
+            <>
+              <span>·</span>
+              <span className="font-mono">{formatDuration(item.durationSeconds)}</span>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-3 mt-2">

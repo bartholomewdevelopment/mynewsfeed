@@ -12,6 +12,19 @@ const ytParser = new Parser({
   },
 });
 
+const getDurationSeconds = async (videoId) => {
+  try {
+    const res = await axios.get(`https://www.youtube.com/watch?v=${videoId}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' },
+      timeout: 8000,
+    });
+    const match = res.data.match(/"lengthSeconds":"(\d+)"/);
+    return match ? parseInt(match[1]) : null;
+  } catch {
+    return null;
+  }
+};
+
 const BROWSER_UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 
@@ -121,8 +134,8 @@ const fetchYouTubeChannel = async (source, keywordRules) => {
         continue;
       }
 
-      // Thumbnail URL is predictable from the video ID — no API call needed
       const thumbnail = `https://i3.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+      const durationSeconds = await getDurationSeconds(videoId);
 
       const itemData = {
         title,
@@ -134,6 +147,7 @@ const fetchYouTubeChannel = async (source, keywordRules) => {
         summary,
         thumbnailUrl: thumbnail,
         videoId,
+        durationSeconds,
         publishedAt: entry.pubDate ? new Date(entry.pubDate) : new Date(),
         category: source.category || 'video',
         severity: 'none',

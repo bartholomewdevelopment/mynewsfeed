@@ -14,6 +14,7 @@ const feedItemSchema = new mongoose.Schema({
   summary: String,
   thumbnailUrl: String,
   videoId: String,
+  durationSeconds: { type: Number, default: null },
   publishedAt: Date,
   fetchedAt: { type: Date, default: Date.now },
   category: String,

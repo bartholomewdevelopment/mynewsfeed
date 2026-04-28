@@ -28,8 +28,8 @@ export default function Login() {
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-2xl font-bold tracking-tight text-sky-400 mb-1">Signal Feed</div>
-          <p className="text-slate-500 text-sm">Personal Priority Briefing</p>
+          <div className="text-2xl font-bold tracking-tight text-sky-400 mb-1">MyNewsFeed</div>
+          <p className="text-slate-500 text-sm">mynewsfeed.org</p>
         </div>
 
         <form

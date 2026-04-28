@@ -25,7 +25,7 @@ export default function TopBar({
         {/* Left: logo + count */}
         <div className="flex items-center gap-3">
           <Link to="/" className="text-base font-bold tracking-tight text-sky-400">
-            Signal Feed
+            MyNewsFeed
           </Link>
           {itemCount > 0 && (
             <span className="bg-slate-800 text-slate-400 text-xs font-medium px-2 py-0.5 rounded-full">

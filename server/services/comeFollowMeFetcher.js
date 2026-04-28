@@ -26,7 +26,15 @@ const fetchLessonViaApi = async (lessonNumber) => {
   });
   const meta = res.data?.meta || {};
   const body = res.data?.content?.body || '';
-  const text = body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const text = body
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<\/h\d>/gi, '\n\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&#\d+;/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
   return {
     title: meta.title || `Come, Follow Me — Lesson ${lessonNumber}`,
     summary: text.substring(0, 8000),

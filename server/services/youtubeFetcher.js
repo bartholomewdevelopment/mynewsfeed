@@ -15,13 +15,16 @@ const ytParser = new Parser({
 const getDurationSeconds = async (videoId) => {
   try {
     const res = await axios.get(`https://www.youtube.com/watch?v=${videoId}`, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' },
-      timeout: 8000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+      timeout: 6000,
     });
     const match = res.data.match(/"lengthSeconds":"(\d+)"/);
     return match ? parseInt(match[1]) : null;
   } catch {
-    return null;
+    return null; // Non-fatal — duration just won't show for this video
   }
 };
 

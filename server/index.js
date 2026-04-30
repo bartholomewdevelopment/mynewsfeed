@@ -11,23 +11,25 @@ const FeedItem = require('./models/FeedItem');
 const app = express();
 
 const archiveOldItems = async () => {
+  const fiveDays    = new Date(Date.now() - 5  * 24 * 60 * 60 * 1000);
   const fourteenDays = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+
+  // All content archives after 5 days
   const archived = await FeedItem.updateMany(
-    { archived: { $ne: true }, publishedAt: { $lt: fourteenDays } },
+    { archived: { $ne: true }, publishedAt: { $lt: fiveDays } },
     { $set: { archived: true, archivedReason: 'age' } }
   );
   if (archived.modifiedCount > 0) {
-    console.log(`[archive] Auto-archived ${archived.modifiedCount} items older than 14 days`);
+    console.log(`[archive] Auto-archived ${archived.modifiedCount} items older than 5 days`);
   }
 
-  // Hard delete archived items older than 60 days
-  const sixtyDays = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+  // Hard delete after 14 days total (9 days in archive)
   const deleted = await FeedItem.deleteMany({
     archived: true,
-    publishedAt: { $lt: sixtyDays },
+    publishedAt: { $lt: fourteenDays },
   });
   if (deleted.deletedCount > 0) {
-    console.log(`[archive] Deleted ${deleted.deletedCount} archived items older than 60 days`);
+    console.log(`[archive] Deleted ${deleted.deletedCount} items older than 14 days`);
   }
 };
 

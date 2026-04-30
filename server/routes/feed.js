@@ -4,14 +4,16 @@ const FeedItem = require('../models/FeedItem');
 const { refreshAllFeeds, getRefreshStatus } = require('../services/feedRefresher');
 const { extractArticle } = require('../services/articleExtractor');
 
+const FIVE_DAYS    = 5  * 24 * 60 * 60 * 1000;
 const FOURTEEN_DAYS = 14 * 24 * 60 * 60 * 1000;
 
 // Main feed — fresh, unarchived items only
 router.get('/', auth, async (req, res) => {
   const { type, category, excludeCategory, limit = 500, page = 1, local } = req.query;
-  const cutoff = new Date(Date.now() - FOURTEEN_DAYS);
 
+  const cutoff = new Date(Date.now() - FIVE_DAYS);
   const eightDaysAhead = new Date(Date.now() + 8 * 24 * 60 * 60 * 1000);
+
   const query = {
     approved: true,
     archived: { $ne: true },

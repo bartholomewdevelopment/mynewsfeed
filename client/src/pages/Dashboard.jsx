@@ -33,20 +33,18 @@ export default function Dashboard() {
   const fetchData = useCallback(async () => {
     try {
       setError('');
-      const [alertsRes, churchRes, localRes, worldRes, sportsRes, videoRes] = await Promise.all([
+      const [alertsRes, cfmRes, churchNewsRes, localRes, worldRes, sportsRes, videoRes] = await Promise.all([
         api.get('/feed/alerts'),
-        api.get('/feed?type=church&limit=500'),
+        api.get('/feed?type=church&category=come-follow-me&limit=500'),      // 14-day window
+        api.get('/feed?type=church&excludeCategory=come-follow-me&limit=500'), // 5-day window
         api.get('/feed?type=article&local=1&limit=500'),
         api.get('/feed?type=article&local=0&excludeCategory=sports&limit=500'),
         api.get('/feed?type=article&category=sports&limit=500'),
         api.get('/feed?type=video&limit=500'),
       ]);
       setAlerts(alertsRes.data);
-      // Come Follow Me pinned to top of church section
-      const church = [...churchRes.data].sort((a, b) =>
-        (b.category === 'come-follow-me' ? 1 : 0) - (a.category === 'come-follow-me' ? 1 : 0)
-      );
-      setChurchItems(church);
+      // CFM pinned to top, regular church news below
+      setChurchItems([...cfmRes.data, ...churchNewsRes.data]);
       setLocalNews(localRes.data);
       setWorldNews(worldRes.data);
       setSportsNews(sportsRes.data);

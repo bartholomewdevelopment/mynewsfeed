@@ -14,22 +14,35 @@ const archiveOldItems = async () => {
   const fiveDays    = new Date(Date.now() - 5  * 24 * 60 * 60 * 1000);
   const fourteenDays = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
 
-  // All content archives after 5 days
+  // All content archives after 5 days — except Come Follow Me
   const archived = await FeedItem.updateMany(
-    { archived: { $ne: true }, publishedAt: { $lt: fiveDays } },
+    { archived: { $ne: true }, category: { $ne: 'come-follow-me' }, publishedAt: { $lt: fiveDays } },
     { $set: { archived: true, archivedReason: 'age' } }
   );
   if (archived.modifiedCount > 0) {
     console.log(`[archive] Auto-archived ${archived.modifiedCount} items older than 5 days`);
   }
 
-  // Hard delete after 14 days total (9 days in archive)
+  // Come Follow Me archives after 14 days (show current + last week's lesson)
+  const archivedCfm = await FeedItem.updateMany(
+    { archived: { $ne: true }, category: 'come-follow-me', publishedAt: { $lt: fourteenDays } },
+    { $set: { archived: true, archivedReason: 'age' } }
+  );
+  if (archivedCfm.modifiedCount > 0) {
+    console.log(`[archive] Auto-archived ${archivedCfm.modifiedCount} Come Follow Me lessons older than 14 days`);
+  }
+
+  // Hard delete after 14 days total for regular content, 30 days for Come Follow Me
+  const thirtyDays = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const deleted = await FeedItem.deleteMany({
     archived: true,
-    publishedAt: { $lt: fourteenDays },
+    $or: [
+      { category: { $ne: 'come-follow-me' }, publishedAt: { $lt: fourteenDays } },
+      { category: 'come-follow-me', publishedAt: { $lt: thirtyDays } },
+    ],
   });
   if (deleted.deletedCount > 0) {
-    console.log(`[archive] Deleted ${deleted.deletedCount} items older than 14 days`);
+    console.log(`[archive] Deleted ${deleted.deletedCount} items past retention limit`);
   }
 };
 

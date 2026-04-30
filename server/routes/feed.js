@@ -11,8 +11,12 @@ const FOURTEEN_DAYS = 14 * 24 * 60 * 60 * 1000;
 router.get('/', auth, async (req, res) => {
   const { type, category, excludeCategory, limit = 500, page = 1, local } = req.query;
 
-  const cutoff = new Date(Date.now() - FIVE_DAYS);
-  const eightDaysAhead = new Date(Date.now() + 8 * 24 * 60 * 60 * 1000);
+  const fiveDayCutoff     = new Date(Date.now() - FIVE_DAYS);
+  const fourteenDayCutoff = new Date(Date.now() - FOURTEEN_DAYS);
+  const eightDaysAhead    = new Date(Date.now() + 8 * 24 * 60 * 60 * 1000);
+
+  // Come Follow Me uses 14-day window; everything else uses 5-day window
+  const cutoff = (category === 'come-follow-me') ? fourteenDayCutoff : fiveDayCutoff;
 
   const query = {
     approved: true,

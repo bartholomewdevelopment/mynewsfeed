@@ -28,6 +28,8 @@ router.get('/', auth, async (req, res) => {
   if (excludeCategory) query.category = { $ne: excludeCategory };
   if (local === '1') query.locationRelevance = { $gt: 0 };
   if (local === '0') query.locationRelevance = 0;
+  // Articles must score above threshold — filters out weak keyword matches
+  if (type === 'article') query.importanceScore = { $gte: 25 };
 
   const items = await FeedItem.find(query)
     .sort({ importanceScore: -1, publishedAt: -1 })

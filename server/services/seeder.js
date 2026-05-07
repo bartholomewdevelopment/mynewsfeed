@@ -1,6 +1,26 @@
 const Source = require('../models/Source');
 const KeywordRule = require('../models/KeywordRule');
 
+// Shared emergency-only keyword list — the question is: does this threaten life, safety, or daily function?
+const EMERGENCY_KEYWORDS = [
+  'tornado warning','tornado watch','tornado emergency',
+  'flash flood warning','flash flood watch','flood warning','flood emergency',
+  'severe thunderstorm warning','winter storm warning','blizzard warning',
+  'ice storm warning','hurricane warning','hurricane watch',
+  'earthquake','wildfire','brush fire',
+  'explosion','structure fire','house fire','building fire',
+  'chemical spill','hazmat','gas leak','train derailment',
+  'active shooter','bomb threat','bomb squad',
+  'evacuation order','mandatory evacuation','shelter in place',
+  'power outage','widespread outage',
+  'boil water advisory','water main break','water main burst',
+  'road closed','road closure','bridge closed','bridge collapse',
+  'outbreak','contamination','food recall','drug recall','public health emergency',
+  'amber alert','silver alert','missing child',
+  'gallipolis','gallia county','meigs county','45686','rio grande','vinton','point pleasant',
+  'school closing','school cancellation','school lockdown',
+];
+
 // All URLs verified working as of April 2026
 const DEFAULT_SOURCES = [
   {
@@ -35,20 +55,9 @@ const DEFAULT_SOURCES = [
     category: 'local-news',
     priority: 9,
     locationTags: ['gallia', 'gallipolis', '45686', 'meigs', 'mason county', 'point pleasant', 'ohio', 'west virginia'],
-    includeKeywords: [
-      'gallipolis', 'gallia', 'meigs', 'mason county', '45686', 'rio grande', 'vinton', 'point pleasant',
-      'emergency', 'tornado', 'flood', 'hurricane', 'earthquake', 'wildfire',
-      'fire', 'explosion', 'bomb', 'threat', 'shooting', 'shot', 'stabbing',
-      'killed', 'homicide', 'murder', 'fatality', 'dead', 'fatal', 'crash', 'accident',
-      'missing', 'amber alert', 'silver alert', 'kidnap', 'abduct',
-      'evacuation', 'evacuate', 'shelter in place', 'power outage', 'boil water',
-      'road closure', 'bridge closed', 'gas leak', 'chemical spill', 'hazmat',
-      'severe', 'warning', 'watch', 'blizzard', 'ice storm', 'derailment',
-      'arrested', 'indicted', 'charged', 'sentenced', 'verdict',
-      'school closing', 'school cancellation', 'recall', 'outbreak', 'contamination',
-    ],
+    includeKeywords: EMERGENCY_KEYWORDS,
     excludeKeywords: [],
-    notes: 'Hyperlocal Gallia/Meigs/Mason — emergency and critical safety content only.',
+    notes: 'Hyperlocal Gallia/Meigs/Mason — physical emergency and life-safety content only.',
   },
   {
     name: 'WOWK TV — Huntington/Charleston',
@@ -57,18 +66,8 @@ const DEFAULT_SOURCES = [
     category: 'local-news',
     priority: 7,
     locationTags: ['gallia', 'ohio', 'west virginia', 'huntington', 'charleston'],
-    includeKeywords: [
-      'gallipolis', 'gallia', 'meigs', 'mason county', '45686', 'rio grande', 'vinton',
-      'emergency', 'tornado', 'flood', 'hurricane', 'earthquake', 'wildfire',
-      'fire', 'explosion', 'bomb', 'threat', 'shooting', 'shot', 'stabbing',
-      'killed', 'homicide', 'murder', 'fatality', 'dead', 'fatal', 'crash', 'accident',
-      'missing', 'amber alert', 'silver alert', 'kidnap', 'abduct',
-      'evacuation', 'evacuate', 'shelter in place', 'power outage', 'boil water',
-      'road closure', 'bridge closed', 'gas leak', 'chemical spill', 'hazmat',
-      'severe', 'warning', 'watch', 'blizzard', 'ice storm', 'derailment',
-      'arrested', 'indicted', 'charged', 'sentenced', 'verdict',
-    ],
-    excludeKeywords: ['festival', 'donation', 'award', 'fundraiser', 'scholarship', 'ribbon', 'concert', 'entertainment', 'showcase'],
+    includeKeywords: EMERGENCY_KEYWORDS,
+    excludeKeywords: [],
   },
   {
     name: 'ESPN — NBA News',
@@ -103,11 +102,8 @@ const DEFAULT_SOURCES = [
     category: 'local-news',
     priority: 7,
     locationTags: ['ohio', 'columbus'],
-    includeKeywords: [
-      'ohio', 'columbus', 'gallia', 'gallipolis', 'emergency', 'weather', 'warning',
-      'tornado', 'flood', 'shooting', 'missing', 'road closure', 'accident',
-      'evacuation', 'power outage', 'school closing', 'recall', 'public safety',
-    ],
+    includeKeywords: EMERGENCY_KEYWORDS,
+    excludeKeywords: [],
     notes: 'NBC affiliate Columbus OH — WBNS 10TV',
   },
   {
@@ -117,14 +113,8 @@ const DEFAULT_SOURCES = [
     category: 'ohio-news',
     priority: 5,
     locationTags: ['ohio'],
-    includeKeywords: [
-      'emergency', 'disaster', 'flood', 'tornado', 'severe weather',
-      'gallia', 'gallipolis', 'public safety', 'evacuation',
-      'road closure', 'school closing', 'health warning',
-    ],
-    excludeKeywords: [
-      'opinion', 'editorial', 'political drama', 'campaign',
-    ],
+    includeKeywords: EMERGENCY_KEYWORDS,
+    excludeKeywords: [],
   },
 ];
 
